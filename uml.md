@@ -332,3 +332,92 @@ stateDiagram-v2
     EnSeguimiento --> Adoptado: seguimiento satisfactorio
     EnSeguimiento --> Disponible: adopcion cancelada
 ```
+
+## 6. Diagrama de arquitectura del sistema
+
+```mermaid
+flowchart TB
+    subgraph presentacion[Capa de presentacion]
+        vistaCiudadano[Vista ciudadano]
+        vistaRescate[Vista rescate y refugio]
+        vistaAdopcion[Vista adopciones]
+    end
+
+    subgraph control[Capa de control MVC]
+        casoController[CasosRescateController]
+        animalController[AnimalesController]
+        adopcionController[AdopcionesController]
+        usuarioController[UsuariosController]
+    end
+
+    subgraph negocio[Capa de servicios y reglas de negocio]
+        gestorCasos[Gestor de casos]
+        gestorAnimales[Gestor de animales]
+        gestorVeterinario[Gestor veterinario]
+        gestorAdopciones[Gestor de adopciones]
+        gestorRefugios[Gestor de refugios]
+    end
+
+    subgraph patrones[Patrones de diseno]
+        singleton[Singleton\nConexionBD y GestorCasos]
+        observer[Observer\nServicioNotificaciones]
+        factory[Factory Method\nExpedienteFactory]
+    end
+
+    subgraph modelo[Capa de modelo y persistencia]
+        entidades[Entidades del dominio\nAnimal, CasoRescate, Adopcion]
+        repositorios[Repositorios de datos]
+        baseDatos[(Base de datos)]
+    end
+
+    vistaCiudadano --> casoController
+    vistaRescate --> casoController
+    vistaRescate --> animalController
+    vistaRescate --> usuarioController
+    vistaAdopcion --> adopcionController
+
+    casoController --> gestorCasos
+    animalController --> gestorAnimales
+    adopcionController --> gestorAdopciones
+    usuarioController --> gestorRefugios
+
+    gestorCasos --> gestorAnimales
+    gestorCasos --> gestorRefugios
+    gestorAnimales --> gestorVeterinario
+    gestorAdopciones --> gestorAnimales
+    gestorAdopciones --> observer
+    gestorCasos --> singleton
+    gestorVeterinario --> factory
+
+    singleton --> repositorios
+    factory --> entidades
+    observer --> entidades
+    gestorCasos --> entidades
+    gestorAnimales --> entidades
+    gestorVeterinario --> entidades
+    gestorAdopciones --> entidades
+    gestorRefugios --> entidades
+    entidades --> repositorios
+    repositorios --> baseDatos
+
+    classDef presentacion fill:#dbeafe,stroke:#2563eb,color:#172554
+    classDef control fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef negocio fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef patrones fill:#fce7f3,stroke:#db2777,color:#831843
+    classDef modelo fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+
+    class vistaCiudadano,vistaRescate,vistaAdopcion presentacion
+    class casoController,animalController,adopcionController,usuarioController control
+    class gestorCasos,gestorAnimales,gestorVeterinario,gestorAdopciones,gestorRefugios negocio
+    class singleton,observer,factory patrones
+    class entidades,repositorios,baseDatos modelo
+```
+
+### Descripcion de la arquitectura
+
+- **Presentacion:** permite reportar casos, gestionar rescates y solicitar adopciones.
+- **Control MVC:** recibe las acciones de las vistas y las envia al servicio correspondiente.
+- **Servicios:** aplica las reglas de negocio de rescate, veterinaria, refugios y adopciones.
+- **Patrones:** Singleton administra la conexion y el gestor central, Observer distribuye notificaciones y Factory Method crea expedientes por especie.
+- **Modelo y persistencia:** representa las entidades y almacena la informacion en la base de datos.
+
