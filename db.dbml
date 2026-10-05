@@ -1,0 +1,173 @@
+Table roles_usuario {
+  id_rol integer [primary key]
+  nombre_rol varchar [not null, unique]
+}
+
+Table estados_usuario {
+  id_estado integer [primary key]
+  nombre_estado varchar [not null, unique]
+}
+
+Table usuarios {
+  id_usuario integer [primary key]
+  id_rol integer [not null]
+  id_estado integer [not null]
+  nombres varchar [not null]
+  apellidos varchar [not null]
+  telefono varchar
+  email varchar [not null, unique]
+  direccion varchar
+  fecha_registro timestamp
+}
+
+Table especies {
+  id_especie integer [primary key]
+  nombre_especie varchar [not null, unique]
+}
+
+Table estados_animal {
+  id_estado integer [primary key]
+  nombre_estado varchar [not null, unique]
+}
+
+Table animales {
+  id_animal integer [primary key]
+  id_especie integer [not null]
+  id_estado integer [not null]
+  nombre varchar [not null]
+  sexo varchar [not null]
+  edad_aproximada integer
+  raza varchar
+  color varchar
+  tamano varchar
+  descripcion text
+  fecha_ingreso timestamp
+}
+
+Table refugios {
+  id_refugio integer [primary key]
+  id_usuario_responsable integer [not null]
+  nombre_refugio varchar [not null]
+  direccion varchar [not null]
+  telefono varchar
+  capacidad integer
+  activo boolean [default: true]
+}
+
+Table estados_caso_rescate {
+  id_estado integer [primary key]
+  nombre_estado varchar [not null, unique]
+}
+
+Table casos_rescate {
+  id_caso integer [primary key]
+  id_usuario_reporta integer [not null]
+  id_usuario_asignado integer
+  id_estado integer [not null]
+  id_animal integer
+  ubicacion varchar [not null]
+  latitud decimal
+  longitud decimal
+  descripcion text [not null]
+  nivel_urgencia integer [not null, note: 'Rango del 1 al 5']
+  fecha_reporte timestamp
+  fecha_cierre timestamp
+}
+
+Table rescates {
+  id_rescate integer [primary key]
+  id_caso integer [not null, unique]
+  id_refugio integer
+  id_usuario_rescatista integer [not null]
+  fecha_rescate timestamp [not null]
+  observaciones text
+}
+
+Table expedientes_veterinarios {
+  id_expediente integer [primary key]
+  id_animal integer [not null, unique]
+  id_usuario_veterinario integer [not null]
+  peso decimal
+  estado_salud varchar [not null]
+  vacunado boolean [default: false]
+  esterilizado boolean [default: false]
+  observaciones text
+  fecha_revision timestamp
+}
+
+Table tratamientos {
+  id_tratamiento integer [primary key]
+  id_expediente integer [not null]
+  descripcion text [not null]
+  fecha_inicio timestamp
+  fecha_fin timestamp
+  estado varchar [not null]
+}
+
+Table estados_solicitud {
+  id_estado integer [primary key]
+  nombre_estado varchar [not null, unique]
+}
+
+Table solicitudes_adopcion {
+  id_solicitud integer [primary key]
+  id_animal integer [not null]
+  id_usuario_solicitante integer [not null]
+  id_estado integer [not null]
+  fecha_solicitud timestamp
+  motivo text
+  observaciones text
+}
+
+Table adopciones {
+  id_adopcion integer [primary key]
+  id_solicitud integer [not null, unique]
+  id_usuario_aprobador integer [not null]
+  fecha_adopcion timestamp [not null]
+  fecha_seguimiento timestamp
+  contrato_firmado boolean [default: false]
+  observaciones text
+}
+
+Table seguimientos_adopcion {
+  id_seguimiento integer [primary key]
+  id_adopcion integer [not null]
+  id_usuario_responsable integer [not null]
+  fecha_seguimiento timestamp [not null]
+  estado_animal varchar [not null]
+  observaciones text
+}
+
+Table notificaciones {
+  id_notificacion integer [primary key]
+  id_usuario integer [not null]
+  tipo_notificacion varchar [not null]
+  titulo varchar [not null]
+  contenido text [not null]
+  fecha_emision timestamp
+  leido boolean [default: false]
+}
+
+Ref: usuarios.id_rol > roles_usuario.id_rol
+Ref: usuarios.id_estado > estados_usuario.id_estado
+Ref: animales.id_especie > especies.id_especie
+Ref: animales.id_estado > estados_animal.id_estado
+Ref: refugios.id_usuario_responsable > usuarios.id_usuario
+Ref: casos_rescate.id_usuario_reporta > usuarios.id_usuario
+Ref: casos_rescate.id_usuario_asignado > usuarios.id_usuario
+Ref: casos_rescate.id_estado > estados_caso_rescate.id_estado
+Ref: casos_rescate.id_animal > animales.id_animal
+Ref: rescates.id_caso > casos_rescate.id_caso
+Ref: rescates.id_refugio > refugios.id_refugio
+Ref: rescates.id_usuario_rescatista > usuarios.id_usuario
+Ref: expedientes_veterinarios.id_animal > animales.id_animal
+Ref: expedientes_veterinarios.id_usuario_veterinario > usuarios.id_usuario
+Ref: tratamientos.id_expediente > expedientes_veterinarios.id_expediente
+Ref: solicitudes_adopcion.id_animal > animales.id_animal
+Ref: solicitudes_adopcion.id_usuario_solicitante > usuarios.id_usuario
+Ref: solicitudes_adopcion.id_estado > estados_solicitud.id_estado
+Ref: adopciones.id_solicitud > solicitudes_adopcion.id_solicitud
+Ref: adopciones.id_usuario_aprobador > usuarios.id_usuario
+Ref: seguimientos_adopcion.id_adopcion > adopciones.id_adopcion
+Ref: seguimientos_adopcion.id_usuario_responsable > usuarios.id_usuario
+Ref: notificaciones.id_usuario > usuarios.id_usuario

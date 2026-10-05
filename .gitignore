@@ -1,0 +1,28 @@
+# Configuracion local de VS Code
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Archivos temporales y de respaldo
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Logs
+*.log
+
+# Archivos de entorno con datos sensibles
+.env
+.env.*
+!.env.example
+
+# Dependencias y compilaciones futuras
+node_modules/
+dist/
+build/
+out/
